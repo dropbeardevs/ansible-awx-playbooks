@@ -1,27 +1,24 @@
 - name: Update Linux
   hosts: all
   gather_facts: true
+  become: true
 
   tasks:
     - name: Perform a dist-upgrade
-      become: true
       ansible.builtin.apt:
         upgrade: dist
         update_cache: true
 
     - name: Check if a reboot is required
-      become: true
       ansible.builtin.stat:
         path: /var/run/reboot-required
         get_md5: false
       register: reboot_required_file
 
     - name: Reboot the server (if required)
-      become: true
       ansible.builtin.reboot:
       when: reboot_required_file.stat.exists
 
     - name: Remove dependencies that are no longer required
-      become: true
       ansible.builtin.apt:
         autoremove: true
